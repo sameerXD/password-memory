@@ -55,7 +55,7 @@ const createProject = async(req, res, next)=>{
     try{
         const getUser = await serviceUserService.getById(req.user.id);
         if(!getUser) return sendResponse(req, res, {}, false, 'user do not exist', 'no user with this id found', 404);
-        if(getUser.email_auth==0) return sendResponse(req, res, {}, false, 'user is not authenticated', 'user email is not authenticated!', 400);
+        // if(getUser.email_auth==0) return sendResponse(req, res, {}, false, 'user is not authenticated', 'user email is not authenticated!', 400);
 
         
         let randomString;

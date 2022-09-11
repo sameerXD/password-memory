@@ -24,5 +24,5 @@ app.use('/api/serviceUser', require('./routes/serviceUser'));
 
 let port = process.env.PORT;
 app.listen(port, ()=>{
-    console.log(`listening to port ${config.devPort}`);
+    console.log(`listening to port ${process.env.PORT}`);
 })
