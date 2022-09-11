@@ -14,7 +14,6 @@ const End_user = sequelize.define('end_user', {
       name: Sequelize.STRING,
       email:{
         type:Sequelize.STRING,
-        unique: true
       },
       mobile:{
         type:Sequelize.STRING,

@@ -21,6 +21,18 @@ const getByEmail = async(email)=>{
     return getData;
 }
 
+const getByEmailAndProjectID = async(email,projectId)=>{
+    const getData = await endUserModel.findOne({
+        where:{
+            email:email,
+            project_id:projectId
+        }
+    });
+
+    return getData;
+}
+
+
 const updateById = async(id, updateData)=>{
     const putData = await endUserModel.update(updateData, {
         where:{
@@ -37,6 +49,7 @@ module.exports = {
     create,
     getById,
     getByEmail,
-    updateById
+    updateById,
+    getByEmailAndProjectID
 
 }

@@ -17,8 +17,8 @@ const getBySecret= async(secret)=>{
 const getProjectByUserIdAndProjectName = async(data)=>{
     const getData = await userProjectModel.findOne({
         where:{
-            name:data.projectName,
-            service_user_id: data.userId
+            name:data.name,
+            service_user_id: data.service_user_id
         }
     });
     return getData;

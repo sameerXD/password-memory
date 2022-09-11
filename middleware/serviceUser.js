@@ -24,7 +24,7 @@ const authenticateJWT = (req, res, next) => {
 const projectAuth = async(req, res, next)=>{
             try{// auth the service user 
 
-            let getProject = await userProjectService.getProjectByUserIdAndProjectName({projectName:req.body.projectName, userId:req.body.userId});
+            let getProject = await userProjectService.getProjectByUserIdAndProjectName({name:req.body.projectName, service_user_id:req.body.userId});
 
             if(!getProject) return sendResponse(req, res, {}, false,  'project not found', 'project not found', 404);
     

@@ -57,7 +57,9 @@ const createProject = async(req, res, next)=>{
         if(!getUser) return sendResponse(req, res, {}, false, 'user do not exist', 'no user with this id found', 404);
         // if(getUser.email_auth==0) return sendResponse(req, res, {}, false, 'user is not authenticated', 'user email is not authenticated!', 400);
 
+        const getProject = await userProjectService.getProjectByUserIdAndProjectName({name: req.body.projectName, service_user_id:req.user.id});
         
+        if(getProject) return sendResponse(req, res, {}, false, 'project name already used', 'project name already used', 401); 
         let randomString;
         while(true){
             randomString = serviceUserFunctions.makeid(15);
@@ -207,7 +209,7 @@ const matchPatternUserPassword= async(req, res, next)=>{
         let password = "";
         requestBodyParams.password.forEach(x=>{password+=x});
 
-        const postData = await endUserService.getByEmail(requestBodyParams.email);
+        const postData = await endUserService.getByEmailAndProjectID(requestBodyParams.email,req.projectUser.id);
         if(!postData)return sendResponse(req, res, postData, false, '', 'user not found ',404);
 
         // match encrypt password
