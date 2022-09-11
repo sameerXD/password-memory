@@ -22,7 +22,7 @@ db.sequelize.sync({ alter: true })
 //   register routes
 app.use('/api/serviceUser', require('./routes/serviceUser'));
 
-let port = config.port;
+let port = process.env.PORT;
 app.listen(port, ()=>{
     console.log(`listening to port ${config.devPort}`);
 })
