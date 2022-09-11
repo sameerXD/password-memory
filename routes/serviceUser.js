@@ -10,5 +10,6 @@ router.post('/getEmojiForPatternUser',projectAuth ,serviceUserController.getEmoj
 router.post('/registerEndUser',projectAuth ,serviceUserController.savePatternUserPassword);
 router.post('/matchEndUser',projectAuth ,serviceUserController.matchPatternUserPassword);
 
-
+router.get('/getProfile', authenticateJWT, serviceUserController.getServiceUserProfile);
+router.get('/getProjects', authenticateJWT, serviceUserController.getServiceUserProjects);
 module.exports = router;

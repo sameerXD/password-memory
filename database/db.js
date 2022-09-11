@@ -1,8 +1,10 @@
 const Sequelize = require("sequelize");
+const config = require('../utils/config');
 
-const sequelize = new Sequelize('password_memory_auth', 'root', 'password', {
-    host: 'localhost',
+const sequelize = new Sequelize('password_memory_auth', config.db_username, config.db_password, {
+    host: config.db_uri,
     dialect: 'mysql',
+    port:25060,
     pool: {
       max: 10,
       min: 0,

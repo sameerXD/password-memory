@@ -19,6 +19,8 @@
   "homepage": "https://github.com/sameerXD/password-memory#readme",
   "dependencies": {
     "node-emoji": "^1.11.0",
-    "nodemon": "^2.0.19"
+    "nodemon": "^2.0.19",
+    "pg": "^8.8.0",
+    "pg-hstore": "^2.3.4"
   }
 }

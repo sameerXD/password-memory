@@ -225,7 +225,33 @@ const matchPatternUserPassword= async(req, res, next)=>{
     }
 }
 
+const getServiceUserProfile = async(req, res, next)=>{
+    try{
+        const getProfile = await serviceUserService.getById(req.user.id);
+        if(!getProfile) return sendResponse(req, res, {}, false, 'user not found', 'user not found', 404);
+        return sendResponse(req, res, getProfile, true, '','profile fetched', 200);
+    }catch(err){
+        console.log(err);
+        if(err instanceof ValidationError){
+            return sendResponse(req, res, {}, false, err.errors[0].message, 'validation error', 400);
+        }
+        return sendResponse(req, res, {}, false, 'Internal server error', 'could not fetch users profile', 500);
+    }
+}
 
+const getServiceUserProjects = async(req, res, next)=>{
+    try{
+        const getProjects = await userProjectService.getProjectByServiceUserId(req.user.id);
+        return sendResponse(req, res, getProjects, true, '','projects fetched', 200);
+
+    }catch(err){
+        console.log(err);
+        if(err instanceof ValidationError){
+            return sendResponse(req, res, {}, false, err.errors[0].message, 'validation error', 400);
+        }
+        return sendResponse(req, res, {}, false, 'Internal server error', 'could not fetch users projects', 500);
+    }
+}
 module.exports = {
     registerUser,
     createProject,
@@ -233,5 +259,7 @@ module.exports = {
     authenticateEmail,
     getEmojiesForSignUp,
     savePatternUserPassword,
-    matchPatternUserPassword
+    matchPatternUserPassword,
+    getServiceUserProfile,
+    getServiceUserProjects
 }

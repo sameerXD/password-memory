@@ -23,8 +23,18 @@ const getProjectByUserIdAndProjectName = async(data)=>{
     });
     return getData;
 }
+
+const getProjectByServiceUserId = async(serviceUserId)=>{
+    const getData = await userProjectModel.findAll({
+        where:{
+            service_user_id:serviceUserId
+        }
+    });
+    return getData;
+}
 module.exports = {
     create,
     getBySecret,
-    getProjectByUserIdAndProjectName
+    getProjectByUserIdAndProjectName,
+    getProjectByServiceUserId
 }
