@@ -3,6 +3,7 @@ const app = express();
 const config = require("./utils/config");
 const db = require('./database/db');
 var cors = require('cors')
+require("dotenv").config()
 
 
 app.use(cors())
@@ -21,6 +22,7 @@ db.sequelize.sync({ alter: true })
 //   register routes
 app.use('/api/serviceUser', require('./routes/serviceUser'));
 
-app.listen(config.port||config.devPort, ()=>{
+let port = config.port;
+app.listen(port, ()=>{
     console.log(`listening to port ${config.devPort}`);
 })
