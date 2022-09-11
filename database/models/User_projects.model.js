@@ -8,6 +8,11 @@ const User_project = sequelize.define('user_project', {
         primaryKey: true,
         autoIncrement: true
       },
+      name: {
+        type: Sequelize.STRING,
+        allowNull: false
+      },
+
       service_user_id:{
         type: Sequelize.INTEGER,
         allowNull: false,

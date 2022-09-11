@@ -1,7 +1,8 @@
 const jwt = require('jsonwebtoken');
 const config = require('../utils/config');
 const {sendResponse} = require('../utils/responseFunctions');
-
+const userProjectService = require("../database/services/User_projects.service");
+const serviceUserFunctions = require("../controller/service_user/service_user_functions");
 const authenticateJWT = (req, res, next) => {
     const authHeader = req.headers.authorization;
 
@@ -20,6 +21,23 @@ const authenticateJWT = (req, res, next) => {
     }
 };
 
+const projectAuth = async(req, res, next)=>{
+            // auth the service user 
+
+            let getProject = await userProjectService.getProjectByUserIdAndProjectName({projectName:req.body.projectName, userId:req.body.userId});
+
+            if(!getProject) return sendResponse(req, res, {}, false,  'project not found', 'project not found', 404);
+    
+            // compare secrets of project
+    
+            const secretRes = await serviceUserFunctions.comparePassword(req.body.projectSecret, getProject.secret);
+    
+            if(!secretRes) return  sendResponse(req, res, {}, false, 'auth failed', 'wrong project secret', 403);
+            req.projectUser = getProject;
+            next();
+}
+
 module.exports = {
-    authenticateJWT
+    authenticateJWT,
+    projectAuth
 }

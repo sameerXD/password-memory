@@ -3,6 +3,8 @@ const {sendResponse} = require("../../utils/responseFunctions");
 const userProjectService = require('../../database/services/User_projects.service');
 const serviceUserFunctions = require('./service_user_functions');
 const {ValidationError} = require('sequelize');
+var nodeEmoji = require('node-emoji')
+
 const registerUser = async(req, res, next)=>{
     try{
         const bodyData = req.body; 
@@ -53,7 +55,7 @@ const createProject = async(req, res, next)=>{
         if(!getUser) return sendResponse(req, res, {}, false, 'user do not exist', 'no user with this id found', 404);
         if(getUser.email_auth==0) return sendResponse(req, res, {}, false, 'user is not authenticated', 'user email is not authenticated!', 400);
 
-
+        
         let randomString;
         while(true){
             randomString = serviceUserFunctions.makeid(15);
@@ -63,11 +65,14 @@ const createProject = async(req, res, next)=>{
             if(!getProjectBySecretId) break;
         }
 
-        const bodyData ={service_user_id: req.user.id, secret: randomString};
+        let encryptedSecret = await serviceUserFunctions.encryptPassword(randomString);
+
+
+        const bodyData ={service_user_id: req.user.id,name:req.body.projectName, secret: encryptedSecret};
 
         const postData = await userProjectService.create(bodyData);
 
-        return sendResponse(req, res, postData, true, '', 'Please do not share this secret', 200);
+        return sendResponse(req, res, {secret: randomString}, true, '', 'Please do not share this secret', 200);
 
         
     }catch(err){
@@ -83,7 +88,7 @@ const authenticateEmail = async(req, res, next)=>{
     try{
         let token = req.query.token;
         let payload = serviceUserFunctions.decryptJwt(token);
-        if(payload == false) sendResponse(req, res, {}, false, 'wrong jwt token', 'Wrong jwt token', 403);
+        if(payload == false) return sendResponse(req, res, {}, false, 'wrong jwt token', 'Wrong jwt token', 403);
 
         const updatePayload = {
             email_auth : 1
@@ -101,9 +106,69 @@ const authenticateEmail = async(req, res, next)=>{
         return sendResponse(req, res, {}, false, 'Internal server error', 'email not authenticated', 500);
     }
 }
+
+// const generateProjectSecret = async(req, res, next)=>{
+//     try{
+//         const request_data = req.body;
+
+//     }catch(err){
+//         console.log(err);
+//         if(err instanceof ValidationError){
+//             return sendResponse(req, res, {}, false, err.errors[0].message, 'validation error', 400);
+//         }
+//         return sendResponse(req, res, {}, false, 'Internal server error', 'secret generation failed', 500);
+//     }
+// }
+
+const getEmojiesForSignUp= async (req, res, next)=>{
+    try{
+
+        // emogi to unicode
+        // let first = emojisList[0].codePointAt(0).toString(16);
+        
+        // unicode to emoji
+        // let em = String.fromCodePoint(parseInt (first, 16));
+
+        let emoji = req.query.emojiName;
+        if(!emoji || emoji == '' || emoji == null) sendResponse(req, res, {}, true, '', '',200 );
+
+        let result = nodeEmoji.search(emoji);
+        return sendResponse(req, res, result, true, '', 'fetch list of emoji', 200);
+    }catch(err){
+    console.log(err);
+    if(err instanceof ValidationError){
+        return sendResponse(req, res, {}, false, err.errors[0].message, 'validation error', 400);
+    }
+    return sendResponse(req, res, {}, false, 'Internal server error', 'could not fetch emogies for signup', 500);
+}
+};
+
+const savePatternUserPassword= async(req, res, next)=>{
+    try{
+        const requestBodyParams = {
+            project_id: req.projectUser.id,
+            password:req.body.password,
+            email:req.body.email,
+            name:req.body.name,
+            mobile:req.body.mobile,
+            role: req.body.role
+        };
+
+
+    }catch(err){
+        console.log(err);
+        if(err instanceof ValidationError){
+            return sendResponse(req, res, {}, false, err.errors[0].message, 'validation error', 400);
+        }
+        return sendResponse(req, res, {}, false, 'Internal server error', 'could not fetch emogies for signup', 500);
+    }
+}
+
+
 module.exports = {
     registerUser,
     createProject,
     login,
-    authenticateEmail
+    authenticateEmail,
+    getEmojiesForSignUp
 }

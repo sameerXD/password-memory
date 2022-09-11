@@ -14,7 +14,17 @@ const getBySecret= async(secret)=>{
     return getData;
 }
 
+const getProjectByUserIdAndProjectName = async(data)=>{
+    const getData = await userProjectModel.findOne({
+        where:{
+            name:data.projectName,
+            service_user_id: data.userId
+        }
+    });
+    return getData;
+}
 module.exports = {
     create,
-    getBySecret
+    getBySecret,
+    getProjectByUserIdAndProjectName
 }

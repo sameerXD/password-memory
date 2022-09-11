@@ -16,5 +16,9 @@
   "bugs": {
     "url": "https://github.com/sameerXD/password-memory/issues"
   },
-  "homepage": "https://github.com/sameerXD/password-memory#readme"
+  "homepage": "https://github.com/sameerXD/password-memory#readme",
+  "dependencies": {
+    "node-emoji": "^1.11.0",
+    "nodemon": "^2.0.19"
+  }
 }
