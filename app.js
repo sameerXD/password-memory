@@ -12,10 +12,10 @@ app.use(express.json());
 
 // to migrate table if not exist or altered
 
-// db.sequelize.sync({ alter: true })
-//   .then(() => {
-//     console.log(`Database & tables created!`)
-//   })
+db.sequelize.sync({ alter: true })
+  .then(() => {
+    console.log(`Database & tables created!`)
+  })
 
 
 //   register routes

@@ -22,7 +22,7 @@ const authenticateJWT = (req, res, next) => {
 };
 
 const projectAuth = async(req, res, next)=>{
-            // auth the service user 
+            try{// auth the service user 
 
             let getProject = await userProjectService.getProjectByUserIdAndProjectName({projectName:req.body.projectName, userId:req.body.userId});
 
@@ -34,7 +34,10 @@ const projectAuth = async(req, res, next)=>{
     
             if(!secretRes) return  sendResponse(req, res, {}, false, 'auth failed', 'wrong project secret', 403);
             req.projectUser = getProject;
-            next();
+            next();}catch(err){
+                console.log(err);
+                next();
+            }
 }
 
 module.exports = {

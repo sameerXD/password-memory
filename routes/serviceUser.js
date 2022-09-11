@@ -7,6 +7,8 @@ router.post('/login', serviceUserController.login);
 router.post('/createProject', authenticateJWT ,serviceUserController.createProject);
 router.put('/emailAuth', serviceUserController.authenticateEmail);
 router.post('/getEmojiForPatternUser',projectAuth ,serviceUserController.getEmojiesForSignUp);
+router.post('/registerEndUser',projectAuth ,serviceUserController.savePatternUserPassword);
+router.post('/matchEndUser',projectAuth ,serviceUserController.matchPatternUserPassword);
 
 
 module.exports = router;

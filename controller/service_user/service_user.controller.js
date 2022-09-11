@@ -2,6 +2,8 @@ const serviceUserService = require('../../database/services/Service_user.service
 const {sendResponse} = require("../../utils/responseFunctions");
 const userProjectService = require('../../database/services/User_projects.service');
 const serviceUserFunctions = require('./service_user_functions');
+const endUserService = require("../../database/services/End_user.service");
+
 const {ValidationError} = require('sequelize');
 var nodeEmoji = require('node-emoji')
 
@@ -145,6 +147,7 @@ const getEmojiesForSignUp= async (req, res, next)=>{
 
 const savePatternUserPassword= async(req, res, next)=>{
     try{
+        console.log(req.projectUser);
         const requestBodyParams = {
             project_id: req.projectUser.id,
             password:req.body.password,
@@ -154,6 +157,64 @@ const savePatternUserPassword= async(req, res, next)=>{
             role: req.body.role
         };
 
+        if(requestBodyParams.password==null || typeof(requestBodyParams.password)!='object'){
+            return sendResponse(req, res, {}, false, 'password cannot be empty', 'password cannot be empty', 403);
+        }
+
+        if(requestBodyParams.password.length!=6){
+            return sendResponse(req, res, {}, false, 'password length has to be 6', 'password length has to be 6', 403);
+        }
+
+        let password = "";
+        requestBodyParams.password.forEach(x=>{password+=x});
+
+        // encrypt password
+        requestBodyParams.password = await serviceUserFunctions.encryptPassword(password);
+
+        const postData = await endUserService.create(requestBodyParams);
+
+        return sendResponse(req, res, postData, true, '', 'end user registered',200);
+
+    }catch(err){
+        console.log(err);
+        if(err instanceof ValidationError){
+            return sendResponse(req, res, {}, false, err.errors[0].message, 'validation error', 400);
+        }
+        return sendResponse(req, res, {}, false, 'Internal server error', 'could not fetch emogies for signup', 500);
+    }
+}
+
+const matchPatternUserPassword= async(req, res, next)=>{
+    try{
+        console.log(req.projectUser);
+        const requestBodyParams = {
+            project_id: req.projectUser.id,
+            password:req.body.password,
+            email:req.body.email,
+            name:req.body.name,
+            mobile:req.body.mobile,
+            role: req.body.role
+        };
+
+        if(requestBodyParams.password==null || typeof(requestBodyParams.password)!='object'){
+            return sendResponse(req, res, {}, false, 'password cannot be empty', 'password cannot be empty', 403);
+        }
+
+        if(requestBodyParams.password.length!=6){
+            return sendResponse(req, res, {}, false, 'password length has to be 6', 'password length has to be 6', 403);
+        }
+
+        let password = "";
+        requestBodyParams.password.forEach(x=>{password+=x});
+
+        const postData = await endUserService.getByEmail(requestBodyParams.email);
+        if(!postData)return sendResponse(req, res, postData, false, '', 'user not found ',404);
+
+        // match encrypt password
+        const passRes = serviceUserFunctions.comparePassword(password, postData.password);
+
+        if(!passRes)return sendResponse(req, res, postData, false, '', 'wrong password ',401);
+        return sendResponse(req, res, {accessToken:await serviceUserFunctions.createJwt({id:postData.id, email:postData.email, role:requestBodyParams.role})}, true, '', 'end user logged in ',200);
 
     }catch(err){
         console.log(err);
@@ -170,5 +231,7 @@ module.exports = {
     createProject,
     login,
     authenticateEmail,
-    getEmojiesForSignUp
+    getEmojiesForSignUp,
+    savePatternUserPassword,
+    matchPatternUserPassword
 }
